@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rock Paper Scissors</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="main-container">
+
+    <!-- Name Entry Section -->
+    <div id="name-section">
+      <h1>✊ 🖐 ✌ Rock Paper Scissors ✊ 🖐 ✌</h1>
+      <form id="name-form" method="POST">
+        <input type="text" id="player-name" name="username" placeholder="Enter your name" required>
+        <button type="submit">Start Game</button>
+      </form>
+    </div>
+
+    <!-- Game UI Section -->
+    <div id="game-section" style="display: none;">
+      <h2>Player: <span id="username"></span></h2>
+
+      <div class="buttons">
+        <button onclick="play('rock')">🪨 Rock</button>
+        <button onclick="play('paper')">📄 Paper</button>
+        <button onclick="play('scissors')">✂️ Scissors</button>
+      </div>
+
+      <div class="results">
+        <p>You chose: <span id="user-choice"></span></p>
+        <p>Computer chose: <span id="computer-choice"></span></p>
+        <p>Result: <span id="result"></span></p>
+        <p>Your Score: <span id="user-score">0</span></p>
+        <p>Computer Score: <span id="computer-score">0</span></p>
+      </div>
+    </div>
+
+    <!-- Leaderboard Section -->
+    <div class="leaderboard" id="leaderboard-section" style="display: none;">
+      <h2>🏆 Leaderboard 🏆</h2>
+      <ul id="leaderboard-list"></ul>
+    </div>
+
+  </div>
+
+  <!-- Your external JS script should be linked here -->
+  <script src="{{ url_for('static', filename='game.js') }}"></script>
+</body>
+</html>

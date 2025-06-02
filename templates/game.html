@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rock Paper Scissors</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script>
+    let countdown;
+    function startTimer() {
+      let time = 5;
+      document.getElementById("timer").innerText = `⏳ Time Left: ${time}s`;
+      countdown = setInterval(() => {
+        time--;
+        if (time <= 0) {
+          clearInterval(countdown);
+          randomChoice();
+        } else {
+          document.getElementById("timer").innerText = `⏳ Time Left: ${time}s`;
+        }
+      }, 1000);
+    }
+
+    function play(userChoice) {
+      clearInterval(countdown); // cancel timer if user acts
+      fetch('/play', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({userChoice})
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("result").innerText = `
+          You chose: ${data.userChoice}
+          Computer chose: ${data.computerChoice}
+          Result: ${data.result}
+          Your Score: ${data.userScore}
+          Computer Score: ${data.computerScore}
+        `;
+
+        // Leaderboard update
+        const leaderboard = data.leaderboard.map(row => `<li>${row[0]}: ${row[1]}</li>`).join('');
+        document.getElementById("leaderboard-list").innerHTML = leaderboard;
+
+        // Achievements update
+        document.getElementById("achievements").innerHTML = data.achievements.map(a => `<li>${a}</li>`).join('');
+        
+        startTimer(); // restart timer for next round
+      });
+    }
+
+    function randomChoice() {
+      const options = ['rock', 'paper', 'scissors'];
+      const choice = options[Math.floor(Math.random() * 3)];
+      play(choice);
+    }
+
+    window.onload = startTimer;
+  </script>
+</head>
+<body>
+  <div class="main-container large">
+    <h1>✊ 🖐 ✌ Rock Paper Scissors ✊ 🖐 ✌</h1>
+    <p>Player: {{ session['username'] }}</p>
+
+    <div id="timer">⏳ Time Left: 5s</div>
+
+    <div class="buttons">
+      <button onclick="play('rock')">🪨 Rock</button>
+      <button onclick="play('paper')">📄 Paper</button>
+      <button onclick="play('scissors')">✂️ Scissors</button>
+    </div>
+
+    <div class="results">
+      <p id="result">Make your move!</p>
+    </div>
+
+    <h3>🏆 Leaderboard 🏆</h3>
+    <ul id="leaderboard-list">
+      {% for row in leaderboard %}
+        <li>{{ row[0] }}: {{ row[1] }}</li>
+      {% endfor %}
+    </ul>
+
+    <h3>🎉 Achievements 🎉</h3>
+    <ul id="achievements"></ul>
+  </div>
+</body>
+</html>

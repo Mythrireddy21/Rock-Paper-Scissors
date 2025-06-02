@@ -1,0 +1,116 @@
+/* General Layout */
+body {
+  background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.main-container {
+  background-color: white;
+  border-radius: 12px;
+  padding: 30px 40px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  width: 480px;
+  max-width: 95%;
+  overflow-x: auto;
+}
+
+.main-container.large {
+  width: 580px;
+}
+
+/* Typography */
+h1 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 24px;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+h3 {
+  color: #2c3e50;
+  margin-top: 20px;
+}
+
+/* Input Fields & Form */
+form input[type="text"] {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 70%;
+  margin-bottom: 10px;
+}
+
+form button {
+  padding: 10px 20px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+form button:hover {
+  background: #2980b9;
+}
+
+/* Game Buttons */
+.buttons {
+  margin: 15px 0;
+}
+
+.buttons button {
+  background-color: #3498db;
+  color: white;
+  padding: 10px 18px;
+  margin: 5px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.buttons button:hover {
+  background-color: #2980b9;
+}
+
+/* Results and Lists */
+.results p, .leaderboard li {
+  margin: 8px 0;
+  font-size: 15px;
+  color: #333;
+}
+
+#leaderboard-list,
+#achievements {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+/* Achievements */
+#achievements li {
+  background-color: #d1f7c4;
+  color: #2e7d32;
+  padding: 6px 10px;
+  margin: 5px 0;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* Timer Styling */
+#timer {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #e74c3c;
+}
