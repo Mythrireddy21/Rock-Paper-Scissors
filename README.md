@@ -111,8 +111,7 @@ This project is licensed under the MIT License.
 * Inspired by classic Rock Paper Scissors game logic.
 * Built with Flask for backend simplicity and quick prototyping.
 
----
+
 
 **Enjoy playing Rock Paper Scissors!** ✊ 🖐 ✌
 
-```
