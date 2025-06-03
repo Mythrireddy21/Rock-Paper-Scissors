@@ -11,12 +11,11 @@ def update_leaderboard(username, score):
     if os.path.exists(leaderboard_file):
         with open(leaderboard_file, 'r', newline='') as file:
             reader = csv.reader(file)
-            records = list(reader)
+            records = [row for row in reader if len(row) >= 2 and row[1].isdigit()]
 
     updated = False
     for record in records:
         if record[0] == username:
-            # Update only if current score is higher
             if int(record[1]) < score:
                 record[1] = str(score)
             updated = True
@@ -25,7 +24,6 @@ def update_leaderboard(username, score):
     if not updated:
         records.append([username, str(score)])
 
-    # Sort records descending by score before writing
     records.sort(key=lambda x: int(x[1]), reverse=True)
 
     with open(leaderboard_file, 'w', newline='') as file:
@@ -37,8 +35,8 @@ def read_leaderboard():
         return []
     with open(leaderboard_file, 'r', newline='') as file:
         reader = csv.reader(file)
-        # Sort descending by score and limit top 5
-        return sorted(reader, key=lambda x: int(x[1]), reverse=True)[:5]
+        valid_rows = [row for row in reader if len(row) >= 2 and row[1].isdigit()]
+        return sorted(valid_rows, key=lambda x: int(x[1]), reverse=True)[:5]
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -65,7 +63,6 @@ def play():
     data = request.get_json(force=True)
     user_choice = data.get('userChoice')
     if user_choice not in choices:
-        # Timeout or invalid choice fallback
         user_choice = random.choice(choices)
 
     computer_choice = random.choice(choices)
@@ -78,7 +75,6 @@ def play():
 
     if user_choice == computer_choice:
         result = "It's a tie!"
-        # win_streak stays the same
     elif (user_choice == "rock" and computer_choice == "scissors") or \
          (user_choice == "paper" and computer_choice == "rock") or \
          (user_choice == "scissors" and computer_choice == "paper"):
@@ -90,7 +86,7 @@ def play():
     else:
         result = "Computer wins!"
         computer_score += 1
-        win_streak = 0  # reset streak on loss
+        win_streak = 0
 
     total_games += 1
 
@@ -104,7 +100,6 @@ def play():
 
     update_leaderboard(username, user_score)
 
-    # Achievements
     achievements = []
     if win_streak >= 5:
         achievements.append("🏅 5 Wins in a Row!")
