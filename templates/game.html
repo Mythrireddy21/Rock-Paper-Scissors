@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script>
     let countdown;
+
     function startTimer() {
       let time = 5;
       document.getElementById("timer").innerText = `⏳ Time Left: ${time}s`;
@@ -21,30 +22,46 @@
     }
 
     function play(userChoice) {
-      clearInterval(countdown); // cancel timer if user acts
+      clearInterval(countdown); // Cancel the timer if user acts
+
       fetch('/play', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({userChoice})
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userChoice: userChoice })
       })
       .then(res => res.json())
       .then(data => {
-        document.getElementById("result").innerText = `
-          You chose: ${data.userChoice}
-          Computer chose: ${data.computerChoice}
-          Result: ${data.result}
-          Your Score: ${data.userScore}
+        // Update result display
+        document.getElementById("result").innerHTML = `
+          You chose: ${data.userChoice}<br>
+          Computer chose: ${data.computerChoice}<br>
+          Result: ${data.result}<br>
+          Your Score: ${data.userScore}<br>
           Computer Score: ${data.computerScore}
         `;
 
-        // Leaderboard update
-        const leaderboard = data.leaderboard.map(row => `<li>${row[0]}: ${row[1]}</li>`).join('');
-        document.getElementById("leaderboard-list").innerHTML = leaderboard;
+        // ✅ Proper leaderboard rendering (dictionary support)
+        let leaderboardHTML = '';
+        data.leaderboard.forEach(user => {
+          if (user.username && typeof user.score === 'number') {
+            leaderboardHTML += `<li><strong>${user.username}</strong>: ${user.score}</li>`;
+          }
+        });
+        document.getElementById("leaderboard-list").innerHTML = leaderboardHTML;
 
-        // Achievements update
-        document.getElementById("achievements").innerHTML = data.achievements.map(a => `<li>${a}</li>`).join('');
-        
-        startTimer(); // restart timer for next round
+        // ✅ Update achievements
+        let achievementsHTML = '';
+        data.achievements.forEach(item => {
+          achievementsHTML += `<li>${item}</li>`;
+        });
+        document.getElementById("achievements").innerHTML = achievementsHTML;
+
+        // Restart timer
+        startTimer();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById("result").textContent = "An error occurred. Try again.";
       });
     }
 
@@ -77,7 +94,7 @@
     <h3>🏆 Leaderboard 🏆</h3>
     <ul id="leaderboard-list">
       {% for row in leaderboard %}
-        <li>{{ row[0] }}: {{ row[1] }}</li>
+        <li><strong>{{ row.username }}</strong>: {{ row.score }}</li>
       {% endfor %}
     </ul>
 

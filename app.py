@@ -7,38 +7,50 @@ choices = ['rock', 'paper', 'scissors']
 leaderboard_file = 'leaderboard.csv'
 
 def update_leaderboard(username, score):
-    records = []
-    if os.path.exists(leaderboard_file):
-        with open(leaderboard_file, 'r', newline='') as file:
-            reader = csv.reader(file)
-            records = list(reader)
-
+    leaderboard = []
     updated = False
-    for record in records:
-        if record[0] == username:
-            # Update only if current score is higher
-            if int(record[1]) < score:
-                record[1] = str(score)
-            updated = True
-            break
+
+    try:
+        with open('leaderboard.csv', 'r') as file:
+            for line in file:
+                record = line.strip().split(',')
+                if len(record) < 2:
+                    continue  # Skip bad or empty lines
+                name, old_score = record[0], int(record[1])
+                if name == username:
+                    new_score = old_score + score
+                    leaderboard.append([username, new_score])
+                    updated = True
+                else:
+                    leaderboard.append([name, old_score])
+    except FileNotFoundError:
+        pass  # File doesn't exist yet
 
     if not updated:
-        records.append([username, str(score)])
+        leaderboard.append([username, score])
 
-    # Sort records descending by score before writing
-    records.sort(key=lambda x: int(x[1]), reverse=True)
+    # Write updated leaderboard
+    with open('leaderboard.csv', 'w') as file:
+        for record in leaderboard:
+            file.write(f"{record[0]},{record[1]}\n")
 
-    with open(leaderboard_file, 'w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerows(records)
 
 def read_leaderboard():
-    if not os.path.exists(leaderboard_file):
-        return []
-    with open(leaderboard_file, 'r') as file:
-        reader = csv.reader(file)
-        valid_rows = [row for row in reader if len(row) >= 2 and row[1].isdigit()]
-        return sorted(valid_rows, key=lambda x: int(x[1]), reverse=True)[:5]
+    leaderboard = []
+    try:
+        with open('leaderboard.csv', 'r') as file:
+            for line in file:
+                parts = line.strip().split(',')
+                if len(parts) != 2:
+                    continue  # Skip bad lines
+                name = parts[0].strip()
+                score_str = parts[1].strip()
+                if not name or not score_str.isdigit():
+                    continue  # Skip empty or non-numeric lines
+                leaderboard.append({'username': name, 'score': int(score_str)})
+    except FileNotFoundError:
+        pass
+    return sorted(leaderboard, key=lambda x: x['score'], reverse=True)[:5]
 
 
 @app.route('/', methods=['GET', 'POST'])

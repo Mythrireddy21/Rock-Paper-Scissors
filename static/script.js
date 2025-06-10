@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// Your existing play function (updated to handle errors)
+// Your existing play function (updated to handle leaderboard rendering correctly)
 function play(userChoice) {
   fetch('/play', {
     method: 'POST',
@@ -46,11 +46,24 @@ function play(userChoice) {
     document.getElementById('computer-score').textContent = data.computerScore;
     document.getElementById('username').textContent = data.username;
 
+    // ✅ Proper leaderboard rendering using object keys
     let leaderboardHTML = '';
     data.leaderboard.forEach(user => {
-      leaderboardHTML += `<li><strong>${user[0]}</strong>: ${user[1]}</li>`;
+      if (user.username && typeof user.score === 'number') {
+        leaderboardHTML += `<li><strong>${user.username}</strong>: ${user.score}</li>`;
+      }
     });
     document.getElementById('leaderboard-list').innerHTML = leaderboardHTML;
+
+    // ✅ Optionally show achievements if available
+    if (data.achievements && Array.isArray(data.achievements)) {
+      let achievementHTML = '';
+      data.achievements.forEach(a => {
+        achievementHTML += `<li>${a}</li>`;
+      });
+      document.getElementById('achievement-list').innerHTML = achievementHTML;
+    }
+
   })
   .catch(error => {
     console.error('Error:', error);
